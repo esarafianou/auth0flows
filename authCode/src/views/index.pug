@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/styles/bootstrap.min.css')
+    link(rel='stylesheet', href='/styles/style.css')
+    title sample authorization code OAuth2 app
+  body
+      a(class='button link' href="/") Home
+      if !loggedIn 
+        a(class='button link' href="/login/authCode") Login with Authorization code
+        a(class='button link' href="/login/implicit") Login with Implicit grant
+        a(class='button link' href="/login/resourceOwnerCreds") Login with resource owner credentials
+        a(class='button link' href="/login/clientCreds") Login with client credentials
+        a(class='button link' href="/login/authCodePKCE") Login with Authorization code + PKCE
+        a(class='button link' href="/login/openID") Login with openID connect
+      else
+        a(class='button link' href="/user" ) Profile
+        a(class='button link' id="qsLogoutBtn" href="/logout") Logout
+      block content

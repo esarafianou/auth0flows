@@ -1,0 +1,12 @@
+.link {
+  margin: 5px 0px 5px 15px;
+  float: left;
+  clear: both;
+}
+
+.icon {
+  height: 20px;
+  width: 20px;
+  float: left;
+  clear: none;
+}
