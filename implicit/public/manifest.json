@@ -1,0 +1,8 @@
+{
+  "short_name": "React App",
+  "name": "Samplei App using implicit OAuth2 flow via Auth0",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
