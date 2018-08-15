@@ -40,6 +40,9 @@ app.use(bodyParser.json())
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
+// ------------------------------------------------------------ //
+// ------------- AUTHORIZATION CODE GRANT FLOW ---------------- //
+// ----------------------------------------------------------- //
 app.get('/login/authCode', passport.authenticate('auth0', {scope: 'openid profile'}), 
   (req, res) => {
     res.redirect('/')
@@ -66,6 +69,7 @@ app.get('/logout',
     res.redirect('/')
   }
 )
+// ----------- END OF AUTHORIZATION CODE GRANT FLOW ----------- //
 
 app.get('/', function(req, res, next) {
   res.render('index', {
@@ -77,6 +81,9 @@ app.get('/login', function(req, res, next) {
   res.redirect('/')
 })
 
+// ------------------------------------------------------------ //
+// ------------- CLIENT CREDENTIALS GRANT FLOW --------------- //
+// ----------------------------------------------------------- //
 app.get('/login/clientCreds',
   (req, res) => {
     const options = {
@@ -105,7 +112,11 @@ app.get('/private', checkJwt, function(req, res) {
     message: 'Hello from a private endpoint! You need to be authenticated to see this.'
   });
 });
+// ------------- END OF CLIENT CREDENTIALS GRANT FLOW ------------ //
 
+// ---------------------------------------------------------------- //
+// ------------- RESOURCE OWNER PASSWORD GRANT FLOW --------------- //
+// ---------------------------------------------------------------- //
 app.get('/login/resourceOwnerCreds',
   (req, res) => {
     res.render('loginForm')
@@ -163,6 +174,7 @@ app.get('/user2', (req, res, next) => {
     userProfile: JSON.stringify(user, null, ' ')
   })
 })
+// ---------- END OF RESOURCE OWNER PASSWORD GRANT FLOW ------------ //
 
 app.use(express.static(path.join(__dirname, 'public')))
 
