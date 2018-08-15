@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/styles/bootstrap.min.css')
+    link(rel='stylesheet', href='/styles/style.css')
+    title sample authorization code OAuth2 app
+  body
+      a(class='button link' href="/") Home
+      if clientCredsBody 
+        pre #{clientCredsBody}
+      else
+        p no body
+      block content

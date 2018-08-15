@@ -3,12 +3,29 @@ const passport = require( 'passport')
 const bodyParser = require( 'body-parser')
 const path = require('path')
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn()
+const request = require('request')
 const pug = require('pug')
+const jwt = require('express-jwt');
+const jwtAuthz = require('express-jwt-authz');
+const jwksRsa = require('jwks-rsa');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 require('./auth')
 
 const app = express()
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://' + process.env.DOMAIN + '/.well-known/jwks.json'
+  }),
+  // Validate the audience and the issuer.
+  audience: 'http://localhost:3000',
+  issuer: 'https://' + process.env.DOMAIN +'/',
+  algorithms: ['RS256']
+});
 
 app.set('view engine', 'pug')
 
@@ -58,6 +75,35 @@ app.get('/', function(req, res, next) {
 app.get('/login', function(req, res, next) {
   res.redirect('/')
 })
+
+app.get('/login/clientCreds',
+  (req, res) => {
+    const options = {
+      method: 'POST',
+      url: 'https://' + process.env.DOMAIN + '/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      body: '{"client_id":"' + process.env.AUTH0_CLIENT_ID + '","client_secret":"'+ process.env.AUTH0_CLIENT_SECRET + '","audience":"' + process.env.AUDIENCEURL + '","grant_type":"client_credentials"}'
+    }
+    request(options, function (error, response, body) {
+      console.log(body)
+      if (error) throw new Error(error)
+      res.json(body)
+    })
+  }
+)
+
+app.get('/public', function(req, res) {
+  res.jsovn({
+    message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
+  });
+});
+
+// This route need authentication
+app.get('/private', checkJwt, function(req, res) {
+  res.json({
+    message: 'Hello from a private endpoint! You need to be authenticated to see this.'
+  });
+});
 
 app.use(express.static(path.join(__dirname, 'public')))
 
