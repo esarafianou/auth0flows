@@ -13,6 +13,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 require('./auth')
 
 const app = express()
+let access_token, id_token, expires_in, user
 
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
@@ -104,6 +105,64 @@ app.get('/private', checkJwt, function(req, res) {
     message: 'Hello from a private endpoint! You need to be authenticated to see this.'
   });
 });
+
+app.get('/login/resourceOwnerCreds',
+  (req, res) => {
+    res.render('loginForm')
+  }
+)
+
+app.post('/login/resourceOwnerCreds',
+  (req, res) => {
+    const options = {
+      method: 'POST',
+      url: 'https://' + process.env.DOMAIN + '/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      body:
+       { grant_type: 'password',
+         username: req.body.username,
+         password: req.body.password,
+         audience: process.env.AUDIENCEURL,
+         scope: 'openid profile',
+         client_id: process.env.AUTH0_CLIENT_ID,
+         client_secret: process.env.AUTH0_CLIENT_SECRET
+      },
+      json: true
+    }
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error)
+      access_token = body.access_token
+      id_token = body.id_token
+      expires_in = body.expires_in
+      res.redirect('/userInfo')
+    })
+  }
+)
+
+app.get('/userInfo',
+  (req, res) => {
+    const options = {
+      method: 'GET',
+      url: 'https://' + process.env.DOMAIN + '/userInfo',
+      headers:
+        { authorization: 'Bearer ' + access_token,
+         'content-type': 'application/json'
+        }
+    };
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+      user = body
+      res.redirect('/user2')
+    });
+  }
+)
+
+app.get('/user2', (req, res, next) => {
+  res.render('user', {
+    user: user,
+    userProfile: JSON.stringify(user, null, ' ')
+  })
+})
 
 app.use(express.static(path.join(__dirname, 'public')))
 

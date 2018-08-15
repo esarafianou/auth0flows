@@ -1,0 +1,12 @@
+block content
+  form(method='post', action='/login/resourceOwnerCreds',  class='form-vertical')
+    div.form-group
+      label Username:
+      input.form-control(name='username', type='text', autofocus)
+
+    div.form-group
+      label Password:
+      input.form-control(name='password', type='password')
+
+    div.form-actions
+      input.btn.btn-primary(type='submit', value='Login')
