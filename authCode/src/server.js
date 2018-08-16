@@ -109,7 +109,7 @@ app.get('/login/clientCreds',
 )
 
 app.get('/public', function(req, res) {
-  res.jsovn({
+  res.json({
     message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
   });
 });
