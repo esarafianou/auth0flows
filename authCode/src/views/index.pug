@@ -11,7 +11,7 @@ html
         a(class='button link' href="/login/implicit") Login with Implicit grant
         a(class='button link' href="/login/resourceOwnerCreds") Login with resource owner credentials
         a(class='button link' href="/login/clientCreds") Login with client credentials
-        a(class='button link' href="/login/authCodePKCE") Login with Authorization code + PKCE
+        a(class='button link' href="https://" + domain + "/authorize?scope=" + scope + "&audience=" + audience + "&response_type=code&client_id=" + clientId + "&code_challenge=" + code_challenge + "&code_challenge_method=S256&redirect_uri=" + redirect_uri_pkce) Login with Authorization code + PKCE
         a(class='button link' href="/login/openID") Login with openID connect
       else
         a(class='button link' href="/user" ) Profile

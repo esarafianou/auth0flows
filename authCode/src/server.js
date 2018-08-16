@@ -8,6 +8,8 @@ const pug = require('pug')
 const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
+const base64url = require('base64url');
+const crypto = require('crypto');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 require('./auth')
@@ -73,7 +75,13 @@ app.get('/logout',
 
 app.get('/', function(req, res, next) {
   res.render('index', {
-    loggedIn: req.isAuthenticated && req.isAuthenticated()
+    loggedIn: req.isAuthenticated && req.isAuthenticated(),
+    clientId: process.env.AUTH0_CLIENT_ID,
+    domain: process.env.DOMAIN,
+    scope: 'openid profile',
+    audience: process.env.AUDIENCEURL,
+    code_challenge: challenge,
+    redirect_uri_pkce: process.env.CALLBACKURL
   })
 })
 
@@ -162,7 +170,7 @@ app.get('/userInfo',
     };
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
-      user = body
+      user = JSON.parse(body)
       res.redirect('/user2')
     });
   }
@@ -175,6 +183,42 @@ app.get('/user2', (req, res, next) => {
   })
 })
 // ---------- END OF RESOURCE OWNER PASSWORD GRANT FLOW ------------ //
+
+// ------------------------------------------------------------------ //
+// ------------- AUTHORIZATION CODE + PKCE GRANT FLOW -------------- //
+// ---------------------------------------------------------------- //
+const sha256 = (buffer) => {
+  return crypto.createHash('sha256').update(buffer).digest();
+}
+
+const verifier = base64url(crypto.randomBytes(32));
+const challenge = base64url(sha256(verifier));
+
+app.get('/callbackPKCE',
+  (req, res) => {
+    const options = {
+      method: 'POST',
+      url: 'https://' + process.env.DOMAIN + '/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      body:
+       { grant_type: 'authorization_code',
+        client_id: process.env.AUTH0_CLIENT_ID,
+        code_verifier: verifier,
+        code: req.query.code,
+        redirect_uri: process.env.CALLBACKURL
+      },
+      json: true
+    }
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error)
+      access_token = body.access_token
+      id_token = body.id_token
+      expires_in = body.expires_in
+      res.redirect('/userInfo')
+    })
+  }
+)
+
 
 app.use(express.static(path.join(__dirname, 'public')))
 
