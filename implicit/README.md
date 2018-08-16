@@ -11,7 +11,10 @@ export const config = {
   CLIENT_ID: {YOUR CLIENT ID},
   REDIRECTURI: {YOUR REDIRECT URI}
 }
+```
+Then run:
 
+```
 npm install
 npm start
 ```
