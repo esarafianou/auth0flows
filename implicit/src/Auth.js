@@ -7,9 +7,7 @@ export default class Auth {
     domain: config.DOMAIN,
     clientID: config.CLIENT_ID,
     redirectUri: config.REDIRECTURI,
-    audience: 'https://' + config.DOMAIN + '/userinfo',
-    responseType: 'token id_token',
-    scope: 'openid profile'
+    responseType: 'token',
   });
 
   userProfile
@@ -33,6 +31,31 @@ export default class Auth {
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
     history.replace('/');
+  }
+
+  loginWithCO(username, password) {
+    this.auth0.login({
+      'username': username,
+      'password': password,
+      'realm': config.REALM
+    },  function (err, data) {
+      console.log(err, data)
+    })
+  }
+
+
+  changePassword() {
+    console.log('change password')
+    this.auth0.changePassword({
+      connection: config.REALM,
+      email:   'testassessmenttest.2@gmail.com'
+    }, function (err, resp) {
+      if(err){
+        console.log(err.message);
+      }else{
+        console.log(resp);
+      }
+    });
   }
 
   setSession(authResult) {
@@ -95,7 +118,7 @@ export default class Auth {
     let accessToken = this.getAccessToken();
     this.auth0.client.userInfo(accessToken, (err, profile) => {
       if (profile) {
-        this.userProfile = profile 
+        this.userProfile = profile
       }
       callback(err, profile);
     });

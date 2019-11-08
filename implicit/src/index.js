@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import Callback from './Callback';
+import LoginCO from './LoginCO';
 import Profile from './Profile';
 import Auth from './Auth';
 import registerServiceWorker from './registerServiceWorker';
@@ -16,6 +17,7 @@ ReactDOM.render(
       <Route exact path='/' render={(props) => <App auth={auth} {...props} />} />
       <Route path="/callback" render={(props) => <Callback auth={auth} {...props} /> }/>
       <Route path="/profile" render={(props) => <Profile auth={auth} {...props} /> }/>
+      <Route path="/loginCO" render={(props) => <LoginCO auth={auth} {...props} /> }/>
     </Switch>
   </Router>
   , document.getElementById('root'));
