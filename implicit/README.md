@@ -2,14 +2,15 @@
 
 ## Run
 
-Create an auth0-config.js file under the src folder with the following
-contents: 
+Copy src/auth0-config.example.js file to src/auth0-config.js and fill the following
+contents:
 
 ```
 export const config = {
   DOMAIN: {YOUR DOMAIN},
   CLIENT_ID: {YOUR CLIENT ID},
-  REDIRECTURI: {YOUR REDIRECT URI}
+  REDIRECTURI: {YOUR REDIRECT URI},
+  REALM: {realm} //needed for co/authenticate
 }
 ```
 Then run:
